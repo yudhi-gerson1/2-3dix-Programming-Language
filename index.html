@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2&3Dix - Programação Gráfica</title>
+    <style>
+        :root {
+            --bg-principal: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b0f19;
+            --cor-texto: #f8fafc;
+            --cor-subtexto: #94a3b8;
+            --cor-accent: #38bdf8;
+            --cor-accent-hover: #0ea5e9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--cor-texto);
+            line-height: 1.6;
+            padding-bottom: 60px;
+        }
+
+        /* Topo / Header */
+        header {
+            text-align: center;
+            padding: 80px 20px;
+            background: linear-gradient(180deg, #131c31 0%, var(--bg-principal) 100%);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        header h1 {
+            font-size: 3.5rem;
+            color: var(--cor-texto);
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        header h1 span {
+            color: var(--cor-accent);
+        }
+
+        header p {
+            font-size: 1.3rem;
+            color: var(--cor-subtexto);
+            margin-top: 15px;
+            font-style: italic;
+        }
+
+        /* Botão de Ação */
+        .btn-criar {
+            display: inline-block;
+            margin-top: 35px;
+            padding: 16px 40px;
+            background-color: var(--cor-accent);
+            color: var(--bg-principal);
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .btn-criar:hover {
+            background-color: var(--cor-accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.5);
+        }
+
+        /* Conteúdo Principal */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 30px;
+            color: var(--cor-texto);
+            border-left: 5px solid var(--cor-accent);
+            padding-left: 15px;
+        }
+
+        .secao {
+            margin-bottom: 60px;
+        }
+
+        /* Grid de Documentação */
+        .grid-documentacao {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 30px;
+        }
+
+        @media (min-width: 768px) {
+            .grid-documentacao {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid #334155;
+        }
+
+        .card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            color: var(--cor-accent);
+        }
+
+        .card p {
+            color: var(--cor-subtexto);
+            margin-bottom: 20px;
+        }
+
+        /* Blocos de Código/Sintaxe */
+        pre {
+            background-color: var(--bg-code);
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Courier New', Courier, monospace;
+            font-size: 0.95rem;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #334155;
+            border: none;
+            color: var(--cor-texto);
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .copy-btn:hover {
+            background: var(--cor-accent);
+            color: var(--bg-principal);
+        }
+
+        /* Listas de Comandos */
+        .lista-itens {
+            list-style: none;
+            margin-top: 15px;
+        }
+
+        .lista-itens li {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #334155;
+        }
+
+        .lista-itens li:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .comando-nome {
+            font-family: monospace;
+            font-weight: bold;
+            color: #f43f5e;
+            font-size: 1.1rem;
+            background: #271c24;
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .exemplo-sub {
+            display: block;
+            font-size: 0.9rem;
+            color: var(--cor-subtexto);
+            margin-top: 5px;
+            background: rgba(0,0,0,0.2);
+            padding: 6px;
+            border-radius: 4px;
+            font-family: monospace;
+        }
+
+        /* Tabela de Compatibilidade */
+        .tabela-suporte {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background-color: var(--bg-card);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .tabela-suporte th, .tabela-suporte td {
+            padding: 14px 20px;
+            text-align: left;
+        }
+
+        .tabela-suporte th {
+            background-color: #334155;
+            color: var(--cor-accent);
+            font-weight: 600;
+        }
+
+        .tabela-suporte tr {
+            border-bottom: 1px solid #334155;
+        }
+
+        .tabela-suporte tr:last-child {
+            border-bottom: none;
+        }
+
+        .tag-prop {
+            display: inline-block;
+            background-color: #475569;
+            color: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            margin: 2px;
+            font-family: monospace;
+        }
+
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--cor-subtexto);
+            font-size: 0.9rem;
+            border-top: 1px solid #1e293b;
+            margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>2<span>&</span>3Dix</h1>
+        <p>Se não souber desenhar algo, programe ele.</p>
+        <a href="transpilador.html" class="btn-criar">Comece a criar</a>
+    </header>
+
+    <div class="container">
+        
+        <div class="secao">
+            <h2>Documentação Geral: Comandos 2D</h2>
+            
+            <div class="grid-documentacao">
+                
+                <div class="card">
+                    <h3>Formas</h3>
+                    <p>Objetos 2D prontos para construir suas artes ou animações no canvas.</p>
+                    
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copiar</button>forma:
+  >> Suas propriedades aqui...</pre>
+
+                    <ul class="lista-itens">
+                        <li>
+                            <span class="comando-nome">circle</span>
+                            <p>Cria um objeto redondo, útil para fazer olhos de um personagem.</p>
+                        </li>
+                        <li>
+                            <span class="comando-nome">square</span>
+                            <p>Cria um quadrado na tela.</p>
+                        </li>
+                        <li>
+                            <span class="comando-nome">triangle</span>
+                            <p>Cria um triângulo.</p>
+                        </li>
+                        <li>
+                            <span class="comando-nome">star</span>
+                            <p>Cria uma estrela.</p>
+                        </li>
+                        <li>
+                            <span class="comando-nome">line</span>
+                            <p>Cria uma linha reta conectando pontos.</p>
+                        </li>
+                        <li>
+                            <span class="comando-nome">text = "Seu texto"</span>
+                            <p>Escreve uma cadeia de caracteres na tela.</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <h3>Propriedades</h3>
+                    <p>Definições e customizações aplicadas a cada tipo de objeto inserido.</p>
+                    
+                    <pre><button class="copy-btn" onclick="copyCode(this)">Copiar</button>square:
+  propriedade = tipo</pre>
+
+                    <ul class="lista-itens">
+                        <li>
+                            <span class="comando-nome">size</span>
+                            <p>Define o tamanho do objeto (não funciona para <i>line</i>).</p>
+                            <span class="exemplo-sub">size = 50px (padrão)</span>
+                            <span class="exemplo-sub">size = 30px 20px (Largura / Altura)</span>
+                            <span class="exemplo-sub">size = standard</span>
+                        </li>
+                        <li>
+                            <span class="comando-nome">position</span>
+                            <p>Define as coordenadas espaciais. O centro do canvas é sempre 0px 0px.</p>
+                            <span class="exemplo-sub">position = 15px 20px (Direta / Cima)</span>
+                            <span class="exemplo-sub">position = center</span>
+                            <span class="exemplo-sub">position = 15px 30px, 20px 15px (Apenas p/ Linhas)</span>
+                        </li>
+                        <li>
+                            <span class="comando-nome">color</span>
+                            <p>Altera a cor do traço/preenchimento usando nomes reservados ou Hexadecimal.</p>
+                            <span class="exemplo-sub">color = red</span>
+                            <span class="exemplo-sub">color = #FF0000</span>
+                        </li>
+                        <li>
+                            <span class="comando-nome">thickness</span>
+                            <p>A espessura da linha ou contorno (Exclusivo para <i>line</i> e <i>text</i>).</p>
+                            <span class="exemplo-sub">thickness = 15px</span>
+                            <span class="exemplo-sub">thickness = standard (padrão é 12px)</span>
+                        </li>
+                        <li>
+                            <span class="comando-nome">zindex</span>
+                            <p>Gerencia as camadas visuais, decidindo quem renderiza na frente ou atrás.</p>
+                            <span class="exemplo-sub">zindex = standard (padrão é 0)</span>
+                            <span class="exemplo-sub">zindex = 3</span>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="secao">
+            <h2>Sintaxe Especial & Comentários</h2>
+            <div class="card" style="background-color: var(--bg-code)">
+                <span class="comando-nome" style="background: #1e293b; color: var(--cor-accent)">&gt;&gt;</span>
+                <p style="margin: 10px 0; color: var(--cor-texto)">Insere uma linha de comentário. Ignorada completamente pelo transpilador durante a execução.</p>
+                <pre><button class="copy-btn" onclick="copyCode(this)">Copiar</button>&gt;&gt; Boo!</pre>
+            </div>
+        </div>
+
+        <div class="secao">
+            <h2>Propriedades Suportadas por Objeto</h2>
+            <p style="color: var(--cor-subtexto); margin-bottom: 20px;">Use este guia rápido para saber exatamente quais modificadores usar com cada elemento gráfico.</p>
+            
+            <table class="tabela-suporte">
+                <thead>
+                    <tr>
+                        <th>Grupo / Objeto</th>
+                        <th>Propriedades Disponíveis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Objetos Comuns</strong><br><small style="color:var(--cor-subtexto)">circle, square, triangle, star</small></td>
+                        <td>
+                            <span class="tag-prop">size</span>
+                            <span class="tag-prop">position</span>
+                            <span class="tag-prop">color</span>
+                            <span class="tag-prop">zindex</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Texto</strong><br><small style="color:var(--cor-subtexto)">text</small></td>
+                        <td>
+                            <span class="tag-prop">size</span>
+                            <span class="tag-prop">position</span>
+                            <span class="tag-prop">color</span>
+                            <span class="tag-prop">zindex</span>
+                            <span class="tag-prop">thickness</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Linha</strong><br><small style="color:var(--cor-subtexto)">line</small></td>
+                        <td>
+                            <span class="tag-prop">position</span>
+                            <span class="tag-prop">color</span>
+                            <span class="tag-prop">zindex</span>
+                            <span class="tag-prop">thickness</span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 2&3Dix. Criado por Yudhi Gerson. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        function copyCode(button) {
+            const pre = button.parentElement;
+            // Clona o nó para remover o botão do texto copiado
+            const textToCopy = pre.innerText.replace('Copiar', '').trim();
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                button.innerText = 'Copiado!';
+                button.style.backgroundColor = '#22c55e';
+                button.style.color = '#fff';
+                
+                setTimeout(() => {
+                    button.innerText = 'Copiar';
+                    button.style.backgroundColor = '#334155';
+                    button.style.color = 'var(--cor-texto)';
+                }, 2000);
+            });
+        }
+    </script>
+</body>
+</html>
+
