@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2&3Dix - Transpilador</title>
+    <style>
+        :root {
+            --bg-principal: #0f172a;
+            --bg-card: #1e293b;
+            --bg-code: #0b0f19;
+            --cor-texto: #f8fafc;
+            --cor-subtexto: #94a3b8;
+            --cor-accent: #38bdf8;
+            --cor-accent-hover: #0ea5e9;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-principal);
+            color: var(--cor-texto);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-x: hidden;
+        }
+
+        /* Cabeçalho */
+        header {
+            text-align: center;
+            padding: 15px;
+            background: linear-gradient(180deg, #131c31 0%, var(--bg-principal) 100%);
+            border-bottom: 1px solid #1e293b;
+        }
+
+        header h1 {
+            font-size: 2rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        header h1 span {
+            color: var(--cor-accent);
+        }
+
+        header h2 {
+            font-size: 0.95rem;
+            color: var(--cor-subtexto);
+            margin-top: 5px;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        /* CORREÇÃO: Layout estritamente vertical para os blocos */
+        .workspace {
+            display: flex;
+            flex-direction: column; 
+            padding: 15px;
+            gap: 20px;
+            width: 100%;
+        }
+
+        /* Painéis de Input e Output */
+        .editor-container, .output-container {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-card);
+            border-radius: 12px;
+            border: 1px solid #334155;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .painel-header {
+            background-color: #334155;
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        /* Input de Código com tamanho ideal */
+        textarea {
+            width: 100%;
+            height: 320px; /* Altura ideal para digitar e não sumir com o output no celular */
+            background-color: var(--bg-code);
+            color: #e2e8f0;
+            padding: 15px;
+            border: none;
+            resize: vertical;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 1rem;
+            line-height: 1.4;
+            outline: none;
+        }
+
+        .btn-executar {
+            padding: 8px 22px;
+            background-color: var(--cor-accent);
+            color: var(--bg-principal);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .btn-executar:hover {
+            background-color: var(--cor-accent-hover);
+        }
+
+        /* Área do Canvas sem paddings exagerados nas laterais */
+        .canvas-wrapper {
+            width: 100%;
+            background-color: #1a2235;
+            padding: 8px; 
+            display: flex;
+            justify-content: center;
+        }
+
+        /* CORREÇÃO: Canvas horizontal cobrindo quase todo o container na largura */
+        canvas {
+            background-color: #ffffff;
+            border-radius: 6px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            width: 100%; /* Força preencher a largura inteira do bloco */
+            height: auto;
+            aspect-ratio: 1.8 / 1; /* Proporção horizontal ideal (paisagem) */
+            display: block;
+        }
+
+        /* Rodapé com seu Copyright */
+        footer {
+            text-align: center;
+            padding: 15px;
+            color: var(--cor-subtexto);
+            font-size: 0.85rem;
+            border-top: 1px solid #1e293b;
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>2<span>&</span>3Dix</h1>
+        <h2>Se não souber desenhar algo, programe ele.</h2>
+    </header>
+
+    <div class="workspace">
+        <div class="editor-container">
+            <div class="painel-header">
+                <span>Input (Código)</span>
+                <button class="btn-executar" onclick="executarCodigo()">Executar</button>
+            </div>
+            <textarea id="codigoFonte" spellcheck="false">
+>> Digite seu código 2&3Dix aqui e aperte Executar!
+
+text = "2&3Dix Engine":
+  size = 28px
+  position = 0px 70px
+  color = #38bdf8
+
+circle:
+  size = 60px
+  position = -120px 0px
+  color = #eab308
+
+square:
+  size = 50px
+  position = -40px 0px
+  color = red
+
+triangle:
+  size = 50px
+  position = 40px 0px
+  color = blue
+
+star:
+  size = 50px
+  position = 120px 0px
+  color = purple
+
+line:
+  position = -160px -40px, 160px -40px
+  thickness = standard
+  color = #334155
+</textarea>
+        </div>
+
+        <div class="output-container">
+            <div class="painel-header">Output (Visor Horizontal)</div>
+            <div class="canvas-wrapper">
+                <canvas id="tela"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 2&3Dix. Criado por Yudhi Gerson. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        const canvas = document.getElementById('tela');
+        const ctx = canvas.getContext('2d');
+
+        // IMPORTANTE: Só executa quando clica no botão, a página inicia com o canvas limpo.
+        function executarCodigo() {
+            // Sincroniza a resolução interna de desenho com o tamanho real renderizado na tela
+            canvas.width = canvas.getBoundingClientRect().width;
+            canvas.height = canvas.getBoundingClientRect().height;
+
+            const centroX = canvas.width / 2;
+            const centroY = canvas.height / 2;
+
+            const codigo = document.getElementById('codigoFonte').value;
+            const linhas = codigo.split('\n');
+            let objetos = [];
+            let objetoAtual = null;
+
+            // 1. PROCESSADOR SINTÁTICO (PARSER)
+            for (let i = 0; i < linhas.length; i++) {
+                let linha = linhas[i].trim();
+
+                if (!linha || linha.startsWith('>>')) continue;
+
+                if (linha.endsWith(':')) {
+                    let linhaSemDoisPontos = linha.slice(0, -1).trim();
+                    let tipoObjeto = linhaSemDoisPontos;
+                    let textoConteudo = "";
+
+                    if (linhaSemDoisPontos.startsWith('text')) {
+                        const regexTexto = /text\s*=\s*["'](.*?)["']/;
+                        const match = linhaSemDoisPontos.match(regexTexto);
+                        if (match) {
+                            textoConteudo = match[1];
+                            tipoObjeto = 'text';
+                        }
+                    }
+
+                    objetoAtual = { 
+                        tipo: tipoObjeto, 
+                        texto: textoConteudo, 
+                        propriedades: {} 
+                    };
+                    objetos.push(objetoAtual);
+                } 
+                else if (linha.includes('=') && objetoAtual) {
+                    let indiceIgual = linha.indexOf('=');
+                    let chave = linha.slice(0, indiceIgual).trim();
+                    let valor = linha.slice(indiceIgual + 1).trim();
+                    objetoAtual.propriedades[chave] = valor;
+                }
+            }
+
+            // 2. TRATAMENTO DE CAMADAS (Z-INDEX)
+            objetos = objetos.map(obj => {
+                let z = 0;
+                let propZ = obj.propriedades['zindex'];
+                if (propZ && propZ !== 'standard') {
+                    z = parseInt(propZ) || 0;
+                }
+                obj.z = z;
+                return obj;
+            });
+            objetos.sort((a, b) => a.z - b.z);
+
+            // 3. LIMPEZA E RENDERIZAÇÃO GRÁFICA
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            objetos.forEach(obj => renderizarObjeto(obj, centroX, centroY));
+        }
+
+        // Funções de tratamento de dados da linguagem
+        function parseSize(valor) {
+            if (!valor || valor === 'standard') return [50, 50];
+            let nums = valor.replace(/px/g, '').trim().split(/\s+/).map(Number);
+            if (nums.length === 1) return [nums[0], nums[0]];
+            return [nums[0] || 50, nums[1] || 50];
+        }
+
+        function parsePosition(valor, isLine = false) {
+            if (!valor || valor === 'center') {
+                return isLine ? [[0,0], [0,0]] : [0, 0];
+            }
+            if (isLine) {
+                let pontos = valor.split(',');
+                let p1 = pontos[0] ? pontos[0].replace(/px/g, '').trim().split(/\s+/).map(Number) : [0,0];
+                let p2 = pontos[1] ? pontos[1].replace(/px/g, '').trim().split(/\s+/).map(Number) : [0,0];
+                return [
+                    [p1[0] || 0, p1[1] || 0],
+                    [p2[0] || 0, p2[1] || 0]
+                ];
+            } else {
+                let nums = valor.replace(/px/g, '').trim().split(/\s+/).map(Number);
+                if (nums.length === 1) return [nums[0] || 0, nums[0] || 0];
+                return [nums[0] || 0, nums[1] || 0];
+            }
+        }
+
+        function parseThickness(valor) {
+            if (!valor || valor === 'standard') return 12;
+            return parseInt(valor.replace(/px/g, '').trim()) || 12;
+        }
+
+        function parseColor(valor) {
+            return valor ? valor : '#000000';
+        }
+
+        function calcCoords(x, y, cX, cY) {
+            return {
+                cx: cX + x,
+                cy: cY - y // Plano cartesiano: Y positivo vai para cima
+            };
+        }
+
+        // Motores de desenho do Canvas
+        function renderizarObjeto(obj, cX, cY) {
+            const props = obj.propriedades;
+            const color = parseColor(props.color);
+            ctx.fillStyle = color;
+            ctx.strokeStyle = color;
+
+            if (obj.tipo === 'square') {
+                let [w, h] = parseSize(props.size);
+                let [x, y] = parsePosition(props.position);
+                let pos = calcCoords(x, y, cX, cY);
+                ctx.fillRect(pos.cx - w/2, pos.cy - h/2, w, h);
+            } 
+            else if (obj.tipo === 'circle') {
+                let [w, h] = parseSize(props.size);
+                let [x, y] = parsePosition(props.position);
+                let pos = calcCoords(x, y, cX, cY);
+                ctx.beginPath();
+                ctx.arc(pos.cx, pos.cy, w/2, 0, Math.PI * 2);
+                ctx.fill();
+            }
+            else if (obj.tipo === 'triangle') {
+                let [w, h] = parseSize(props.size);
+                let [x, y] = parsePosition(props.position);
+                let pos = calcCoords(x, y, cX, cY);
+                ctx.beginPath();
+                ctx.moveTo(pos.cx, pos.cy - h/2);
+                ctx.lineTo(pos.cx - w/2, pos.cy + h/2);
+                ctx.lineTo(pos.cx + w/2, pos.cy + h/2);
+                ctx.closePath();
+                ctx.fill();
+            }
+            else if (obj.tipo === 'star') {
+                let [w, h] = parseSize(props.size);
+                let [x, y] = parsePosition(props.position);
+                let pos = calcCoords(x, y, cX, cY);
+                let raioMaior = w/2;
+                let raioMenor = w/4;
+                ctx.beginPath();
+                for(let i = 0; i < 10; i++) {
+                    let raio = i % 2 === 0 ? raioMaior : raioMenor;
+                    let angulo = (Math.PI/2) - (i * Math.PI/5);
+                    ctx.lineTo(pos.cx + Math.cos(angulo) * raio, pos.cy - Math.sin(angulo) * raio);
+                }
+                ctx.closePath();
+                ctx.fill();
+            }
+            else if (obj.tipo === 'line') {
+                let pontos = parsePosition(props.position, true);
+                let pos1 = calcCoords(pontos[0][0], pontos[0][1], cX, cY);
+                let pos2 = calcCoords(pontos[1][0], pontos[1][1], cX, cY);
+                ctx.lineWidth = parseThickness(props.thickness);
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(pos1.cx, pos1.cy);
+                ctx.lineTo(pos2.cx, pos2.cy);
+                ctx.stroke();
+            }
+            else if (obj.tipo === 'text') {
+                let [w, h] = parseSize(props.size);
+                let [x, y] = parsePosition(props.position);
+                let pos = calcCoords(x, y, cX, cY);
+                
+                ctx.font = `bold ${w}px 'Segoe UI', sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                
+                if (props.thickness) {
+                    ctx.lineWidth = parseThickness(props.thickness);
+                    ctx.strokeText(obj.texto, pos.cx, pos.cy);
+                }
+                ctx.fillText(obj.texto, pos.cx, pos.cy);
+            }
+        }
+    </script>
+</body>
+</html>
+
