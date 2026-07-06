@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2&3Dix 3D - Transpilador Oficial</title>
+    <style>
+        :root {
+            --bg-p: #0f172a;
+            --bg-c: #1e293b;
+            --bg-code: #0b0f19;
+            --texto: #f8fafc;
+            --subtexto: #94a3b8;
+            --accent: #38bdf8;
+            --success: #10b981;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-p);
+            color: var(--texto);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 25px 15px;
+        }
+
+        /* 1. NOME DA LINGUAGEM NO TOPO E LEMA */
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            letter-spacing: 2px;
+            font-weight: 800;
+        }
+
+        header h1 span {
+            color: var(--accent);
+        }
+
+        header h2 {
+            font-size: 1.1rem;
+            color: var(--subtexto);
+            margin-top: 6px;
+            font-style: italic;
+            font-weight: 400;
+        }
+
+        .layout-vertical {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 800px;
+            gap: 20px;
+        }
+
+        /* 2. INPUT (ONDE ESCREVEMOS O CÓDIGO) */
+        .bloco-input {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-c);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .bloco-input label {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--accent);
+        }
+
+        textarea {
+            width: 100%;
+            height: 250px;
+            background-color: var(--bg-code);
+            color: #e2e8f0;
+            border: 1px solid #1e293b;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.95rem;
+            resize: vertical;
+            outline: none;
+            line-height: 1.4;
+        }
+
+        textarea:focus {
+            border-color: var(--accent);
+        }
+
+        .btn-executar {
+            margin-top: 12px;
+            padding: 12px;
+            background: linear-gradient(135deg, var(--accent) 0%, #0284c7 100%);
+            color: var(--bg-p);
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.1s ease;
+            text-transform: uppercase;
+        }
+
+        .btn-executar:active {
+            transform: scale(0.98);
+        }
+
+        /* 3. OUTPUT (ONDE O COMPUTADOR DESENHA EM 3D) */
+        .bloco-output {
+            display: flex;
+            flex-direction: column;
+            background-color: var(--bg-c);
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 15px;
+            width: 100%;
+        }
+
+        .topo-output {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: var(--accent);
+        }
+
+        #status-txt {
+            font-size: 0.8rem;
+            color: var(--subtexto);
+        }
+
+        #canvas-container {
+            width: 100%;
+            height: 400px;
+            background-color: var(--bg-code);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #1e293b;
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* 4. COPYRIGHT */
+        footer {
+            text-align: center;
+            padding: 20px 0;
+            color: var(--subtexto);
+            font-size: 0.85rem;
+            margin-top: 25px;
+            width: 100%;
+            border-top: 1px solid #1e293b;
+        }
+    </style>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
+</head>
+<body>
+
+    <header>
+        <h1>2<span>&</span>3Dix 3D</h1>
+        <h2>Se não souber desenhar algo, programe-o.</h2>
+    </header>
+
+    <div class="layout-vertical">
+        
+        <div class="bloco-input">
+            <label for="codigo-editor">Input (Escreva seu código):</label>
+            <textarea id="codigo-editor" placeholder="Digite seu código aqui...">>> Testando todas as formas com as propriedades corretas!
+
+cube:
+  size = 30px
+  position = -60px 0px 0px
+  color = #38bdf8
+
+sphere:
+  size = 20px 40px 20px >> Esfera esticada em 3 dimensões funcionando!
+  position = center
+  color = red
+
+pyramid-4:
+  size = 30px 50px 30px
+  position = 60px 0px 0px
+  color = #eab308
+
+torus:
+  size = 40px 40px 15px >> Z altera apenas o comprimento do buraco!
+  position = 0px 60px 0px
+  color = purple
+
+line:
+  position = 10px 0px 20px, 0px 10px -20px
+  thickness = standard
+  color = #ff00ff
+
+text = "Olá!":
+  size = standard
+  position = 0px -50px 0px
+  color = blue
+  thickness = 6px</textarea>
+            <button class="btn-executar" id="btn-compilar">Executar Código 3D</button>
+        </div>
+
+        <div class="bloco-output">
+            <div class="topo-output">
+                <span>Output (Visualização Deslizável):</span>
+                <span id="status-txt">Iniciando...</span>
+            </div>
+            <div id="canvas-container"></div>
+        </div>
+
+    </div>
+
+    <footer>
+        <p>&copy; 2026 2&3Dix. Criado por Yudhi Gerson. Todos os direitos reservados.</p>
+    </footer>
+
+    <script>
+        // Escopo local seguro para evitar conflitos com consoles de editores mobile
+        (() => {
+            let scene, camera, renderer, controls, objectGroup;
+            let loadedFont = null;
+
+            function init() {
+                const container = document.getElementById('canvas-container');
+                
+                scene = new THREE.Scene();
+                scene.background = new THREE.Color('#0b0f19');
+
+                camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 1000);
+                camera.position.set(0, 100, 200);
+
+                // Renderer limpo e leve para evitar falhas de extensões OES em WebViews antigos
+                renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
+                renderer.setSize(container.clientWidth, container.clientHeight);
+                container.appendChild(renderer.domElement);
+
+                // Movimentação orbital deslizável automática
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.enableDamping = true;
+                controls.dampingFactor = 0.05;
+
+                const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+                scene.add(ambientLight);
+
+                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+                dirLight.position.set(40, 120, 40);
+                scene.add(dirLight);
+
+                objectGroup = new THREE.Group();
+                scene.add(objectGroup);
+
+                // Grid cartesiano de referência
+                const grid = new THREE.GridHelper(200, 20, '#1e293b', '#131c31');
+                grid.position.y = -35;
+                scene.add(grid);
+
+                // Carrega a fonte de texto de forma segura
+                const loader = new THREE.FontLoader();
+                loader.load('https://unpkg.com/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', 
+                    (font) => {
+                        loadedFont = font;
+                        document.getElementById('status-txt').innerText = "✓ Motor 3D Pronto";
+                        document.getElementById('status-txt').style.color = "var(--success)";
+                        compileAndRender();
+                    },
+                    undefined,
+                    () => {
+                        document.getElementById('status-txt').innerText = "✓ Pronto (Sem fontes)";
+                        compileAndRender();
+                    }
+                );
+
+                window.addEventListener('resize', onWindowResize);
+                animate();
+            }
+
+            function onWindowResize() {
+                const container = document.getElementById('canvas-container');
+                camera.aspect = container.clientWidth / container.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(container.clientWidth, container.clientHeight);
+            }
+
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                renderer.render(scene, camera);
+            }
+
+            function build3DLine(pA, pB, thick, colorStr) {
+                const direction = new THREE.Vector3().subVectors(pB, pA);
+                const length = direction.length();
+                const center = pB.clone().add(pA).divideScalar(2);
+                
+                const r = thick / 2;
+                const geo = new THREE.CylinderGeometry(r, r, length, 8);
+                const mat = new THREE.MeshPhongMaterial({ color: colorStr });
+                const mesh = new THREE.Mesh(geo, mat);
+                
+                mesh.position.copy(center);
+                direction.normalize();
+                mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
+                
+                return mesh;
+            }
+
+            function compileAndRender() {
+                // Limpeza completa de execuções anteriores
+                while(objectGroup.children.length > 0) {
+                    objectGroup.remove(objectGroup.children[0]);
+                }
+
+                const rawCode = document.getElementById('codigo-editor').value;
+                const lines = rawCode.split('\n');
+
+                let parsedObjects = [];
+                let currentObj = null;
+
+                for (let i = 0; i < lines.length; i++) {
+                    let lineStr = lines[i].trim();
+
+                    // TRATAMENTO REAL DE COMENTÁRIOS (>>): ignora o resto da linha
+                    if (lineStr.includes('>>')) {
+                        lineStr = lineStr.split('>>')[0].trim();
+                    }
+                    if (!lineStr) continue;
+
+                    // MAPEAMENTO DE BLOCOS DE FORMAS
+                    if (lineStr.endsWith(':')) {
+                        let header = lineStr.slice(0, -1).trim();
+
+                        if (header === 'cube') {
+                            currentObj = { tipo: 'cube', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        } else if (header === 'sphere') {
+                            currentObj = { tipo: 'sphere', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        } else if (header === 'pyramid-4') {
+                            currentObj = { tipo: 'pyramid-4', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        } else if (header === 'torus') {
+                            currentObj = { tipo: 'torus', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        } else if (header === 'line') {
+                            currentObj = { tipo: 'line', position: [[0, 0, 0], [0, 0, 0]], thickness: 12, color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        } else if (header.startsWith('text')) {
+                            let textVal = "Texto";
+                            let match = header.match(/text\s*=\s*"([^"]+)"/);
+                            if (match) textVal = match[1];
+                            currentObj = { tipo: 'text', valor: textVal, size: [50, 50, 50], position: [0, 0, 0], thickness: 6, color: '#38bdf8' };
+                            parsedObjects.push(currentObj);
+                        }
+                        continue;
+                    }
+
+                    // MAPEAMENTO E FILTRAGEM DE PROPRIEDADES
+                    if (currentObj && lineStr.includes('=')) {
+                        let parts = lineStr.split('=');
+                        let prop = parts[0].trim().toLowerCase();
+                        let val = parts[1].trim();
+
+                        if (prop === 'size') {
+                            if (val === 'standard') {
+                                currentObj.size = [50, 50, 50];
+                            } else {
+                                let nums = val.replace(/px/g, '').trim().split(/\s+/).map(Number);
+                                if (nums.length === 1) {
+                                    currentObj.size = [nums[0], nums[0], nums[0]];
+                                } else if (nums.length >= 3) {
+                                    currentObj.size = [nums[0], nums[1], nums[2]];
+                                }
+                            }
+                        } 
+                        else if (prop === 'position') {
+                            if (val === 'center') {
+                                currentObj.position = currentObj.tipo === 'line' ? [[0, 0, 0], [0, 0, 0]] : [0, 0, 0];
+                            } else if (val.includes(',')) {
+                                let pairs = val.split(',');
+                                let pt1 = pairs[0].replace(/px/g, '').trim().split(/\s+/).map(Number);
+                                let pt2 = pairs[1].replace(/px/g, '').trim().split(/\s+/).map(Number);
+                                currentObj.position = [pt1, pt2];
+                            } else {
+                                let nums = val.replace(/px/g, '').trim().split(/\s+/).map(Number);
+                                if (nums.length >= 3) {
+                                    currentObj.position = [nums[0], nums[1], nums[2]];
+                                }
+                            }
+                        } 
+                        else if (prop === 'color') {
+                            currentObj.color = val;
+                        } 
+                        else if (prop === 'thickness') {
+                            if (val === 'standard') {
+                                currentObj.thickness = 12;
+                            } else {
+                                currentObj.thickness = Number(val.replace(/px/g, '').trim()) || 12;
+                            }
+                        }
+                    }
+                }
+
+                // PROCESSAMENTO DOS MODELOS USANDO PRECISÃO POR ESCALA INDEPENDENTE
+                parsedObjects.forEach(obj => {
+                    let mat = new THREE.MeshPhongMaterial({ color: obj.color, shininess: 30 });
+                    let visualMesh;
+
+                    if (obj.tipo === 'cube') {
+                        let geo = new THREE.BoxGeometry(1, 1, 1);
+                        visualMesh = new THREE.Mesh(geo, mat);
+                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
+                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                    } 
+                    else if (obj.tipo === 'sphere') {
+                        // Esfera construída como poliedro unitário (diâmetro = 1)
+                        let geo = new THREE.SphereGeometry(0.5, 32, 32);
+                        visualMesh = new THREE.Mesh(geo, mat);
+                        // Escala 3D direta aplica as deformações perfeitamente (elipsoide compatível)
+                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
+                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                    } 
+                    else if (obj.tipo === 'pyramid-4') {
+                        let geo = new THREE.ConeGeometry(0.7071, 1, 4);
+                        visualMesh = new THREE.Mesh(geo, mat);
+                        visualMesh.rotation.y = Math.PI / 4; 
+                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
+                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                    } 
+                    else if (obj.tipo === 'torus') {
+                        // Geometria básica calculada: diâmetro externo total = 1.0, espessura original Z = 0.3
+                        let geo = new THREE.TorusGeometry(0.35, 0.15, 16, 64);
+                        visualMesh = new THREE.Mesh(geo, mat);
+                        
+                        // X e Y escalam a largura do objeto e do buraco. 
+                        // Z divide por 0.3 para esticar puramente o COMPRIMENTO do tubo sem alterar o buraco de frente!
+                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2] / 0.3);
+                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                    } 
+                    else if (obj.tipo === 'line') {
+                        let pA = new THREE.Vector3(obj.position[0][0], obj.position[0][1], obj.position[0][2]);
+                        let pB = new THREE.Vector3(obj.position[1][0], obj.position[1][1], obj.position[1][2]);
+                        visualMesh = build3DLine(pA, pB, obj.thickness, obj.color);
+                    } 
+                    else if (obj.tipo === 'text') {
+                        if (loadedFont) {
+                            let textHeight = obj.size[1] * 0.6; 
+                            let geo = new THREE.TextGeometry(obj.valor, {
+                                font: loadedFont,
+                                size: textHeight,
+                                height: obj.thickness || 6,
+                                curveSegments: 4,
+                                bevelEnabled: false
+                            });
+                            
+                            geo.computeBoundingBox();
+                            let centerOffset = new THREE.Vector3();
+                            geo.boundingBox.getCenter(centerOffset).negate();
+                            geo.translate(centerOffset.x, centerOffset.y, centerOffset.z);
+                            
+                            visualMesh = new THREE.Mesh(geo, mat);
+                            visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
+                        }
+                    }
+
+                    if (visualMesh) {
+                        objectGroup.add(visualMesh);
+                    }
+                });
+            }
+
+            // Inicialização direta acoplada ao carregamento seguro do DOM
+            window.addEventListener('DOMContentLoaded', () => {
+                init();
+                document.getElementById('btn-compilar').addEventListener('click', compileAndRender);
+            });
+        })();
+    </script>
+</body>
+</html>
+
