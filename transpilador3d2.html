@@ -1,506 +1,626 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2&3Dix 3D - Transpilador Oficial</title>
-    <style>
-        :root {
-            --bg-p: #0f172a;
-            --bg-c: #1e293b;
-            --bg-code: #0b0f19;
-            --texto: #f8fafc;
-            --subtexto: #94a3b8;
-            --accent: #38bdf8;
-            --success: #10b981;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-p);
-            color: var(--texto);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            width: 100vw;
-            overflow-y: auto;
-            overflow-x: hidden;
-            padding: 25px 15px;
-        }
-
-        /* 1. NOME DA LINGUAGEM NO TOPO E LEMA */
-        header {
-            text-align: center;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 800px;
-        }
-
-        header h1 {
-            font-size: 2.5rem;
-            letter-spacing: 2px;
-            font-weight: 800;
-        }
-
-        header h1 span {
-            color: var(--accent);
-        }
-
-        header h2 {
-            font-size: 1.1rem;
-            color: var(--subtexto);
-            margin-top: 6px;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-        .layout-vertical {
-            display: flex;
-            flex-direction: column;
-            width: 100%;
-            max-width: 800px;
-            gap: 20px;
-        }
-
-        /* 2. INPUT (ONDE ESCREVEMOS O CÓDIGO) */
-        .bloco-input {
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-c);
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 15px;
-            width: 100%;
-        }
-
-        .bloco-input label {
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: var(--accent);
-        }
-
-        textarea {
-            width: 100%;
-            height: 250px;
-            background-color: var(--bg-code);
-            color: #e2e8f0;
-            border: 1px solid #1e293b;
-            border-radius: 6px;
-            padding: 12px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.95rem;
-            resize: vertical;
-            outline: none;
-            line-height: 1.4;
-        }
-
-        textarea:focus {
-            border-color: var(--accent);
-        }
-
-        .btn-executar {
-            margin-top: 12px;
-            padding: 12px;
-            background: linear-gradient(135deg, var(--accent) 0%, #0284c7 100%);
-            color: var(--bg-p);
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform 0.1s ease;
-            text-transform: uppercase;
-        }
-
-        .btn-executar:active {
-            transform: scale(0.98);
-        }
-
-        /* 3. OUTPUT (ONDE O COMPUTADOR DESENHA EM 3D) */
-        .bloco-output {
-            display: flex;
-            flex-direction: column;
-            background-color: var(--bg-c);
-            border: 1px solid #334155;
-            border-radius: 10px;
-            padding: 15px;
-            width: 100%;
-        }
-
-        .topo-output {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 8px;
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        #status-txt {
-            font-size: 0.8rem;
-            color: var(--subtexto);
-        }
-
-        #canvas-container {
-            width: 100%;
-            height: 400px;
-            background-color: var(--bg-code);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative;
-            border: 1px solid #1e293b;
-        }
-
-        canvas {
-            width: 100%;
-            height: 100%;
-            display: block;
-        }
-
-        /* 4. COPYRIGHT */
-        footer {
-            text-align: center;
-            padding: 20px 0;
-            color: var(--subtexto);
-            font-size: 0.85rem;
-            margin-top: 25px;
-            width: 100%;
-            border-top: 1px solid #1e293b;
-        }
-    </style>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2&3Dix v1.1 - Ambiente de Desenvolvimento 3D</title>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/FontLoader.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/geometries/TextGeometry.js"></script>
+
+    <style>
+        /* Variáveis de Cores para Controle Total dos Modos Escuro e Claro */
+        :root {
+            --bg-page: #121212;
+            --bg-card: #1e1e1e;
+            --border-ui: #333333;
+            --text-main: #ffffff;
+            --text-muted: #aaaaaa;
+            --input-bg: #252526;
+            --input-text: #ffffff;
+            --btn-bg: #007acc;
+            --btn-hover: #0098ff;
+            --console-bg: #1e1e1e;
+        }
+
+        body.light-mode {
+            --bg-page: #f4f4f7;
+            --bg-card: #ffffff;
+            --border-ui: #cccccc;
+            --text-main: #111111;
+            --text-muted: #555555;
+            --input-bg: #ffffff;
+            --input-text: #111111;
+            --btn-bg: #007acc;
+            --btn-hover: #005999;
+            --console-bg: #ffffff;
+        }
+
+        /* Organização Estritamente Vertical */
+        body {
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            max-width: 850px;
+            gap: 15px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            border-bottom: 2px solid var(--border-ui);
+            padding-bottom: 10px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .lema {
+            font-style: italic;
+            color: var(--text-muted);
+            margin-top: -5px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            align-self: flex-start;
+        }
+
+        .theme-toggle {
+            background-color: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+        }
+
+        textarea {
+            width: 100%;
+            height: 220px;
+            background-color: var(--input-bg);
+            color: var(--input-text);
+            border: 2px solid var(--border-ui);
+            border-radius: 6px;
+            padding: 12px;
+            box-sizing: border-box;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        .btn-compile {
+            background-color: var(--btn-bg);
+            color: white;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .btn-compile:hover {
+            background-color: var(--btn-hover);
+        }
+
+        /* Espaço do Canvas 3D Deslizável */
+        #canvas-wrapper {
+            width: 100%;
+            height: 480px;
+            background-color: #0a0a0a;
+            border: 2px solid var(--border-ui);
+            border-radius: 6px;
+            position: relative;
+            overflow: hidden;
+            touch-action: none !important;
+        }
+
+        #canvas-wrapper canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+        }
+
+        /* Painel de Saída (Console) */
+        .output-box {
+            width: 100%;
+            background-color: var(--console-bg);
+            color: var(--input-text);
+            border: 2px solid var(--border-ui);
+            border-radius: 6px;
+            padding: 15px;
+            box-sizing: border-box;
+            font-family: "Courier New", Courier, monospace;
+            font-size: 14px;
+            min-height: 90px;
+            white-space: pre-wrap;
+            transition: background-color 0.2s, border-color 0.2s, color 0.2s;
+        }
+
+        footer {
+            margin-top: 30px;
+            border-top: 1px solid var(--border-ui);
+            width: 100%;
+            padding-top: 15px;
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+    </style>
 </head>
 <body>
 
-    <header>
-        <h1>2<span>&</span>3Dix 3D</h1>
-        <h2>Se não souber desenhar algo, programe-o.</h2>
-    </header>
+    <div class="container">
+        <header>
+            <h1>2&3Dix v1.1 3D</h1>
+            <button class="theme-toggle" onclick="toggleThemeMode()">Alternar Tema</button>
+        </header>
+        <div class="lema">"Se não souber desenhar, programe-o"</div>
 
-    <div class="layout-vertical">
+        <label for="editor">Entrada de Código (Script 2&3Dix)</label>
+        <textarea id="editor" placeholder="Insira o seu código aqui..."></textarea>
         
-        <div class="bloco-input">
-            <label for="codigo-editor">Input (Escreva seu código):</label>
-            <textarea id="codigo-editor" placeholder="Digite seu código aqui...">>> Testando todas as formas com as propriedades corretas!
+        <button class="btn-compile" onclick="executarTranspilador()">Compilar e Renderizar Cenário</button>
 
-cube:
-  size = 30px
-  position = -60px 0px 0px
-  color = #38bdf8
+        <label>Visualização do Desenho 3D (Deslize para rotacionar)</label>
+        <div id="canvas-wrapper"></div>
 
-sphere:
-  size = 20px 40px 20px >> Esfera esticada em 3 dimensões funcionando!
-  position = center
-  color = red
+        <label for="console-out">Saída de Texto (Console)</label>
+        <div class="output-box" id="console-out">Aguardando execução do compilador...</div>
 
-pyramid-4:
-  size = 30px 50px 30px
-  position = 60px 0px 0px
-  color = #eab308
-
-torus:
-  size = 40px 40px 15px >> Z altera apenas o comprimento do buraco!
-  position = 0px 60px 0px
-  color = purple
-
-line:
-  position = 10px 0px 20px, 0px 10px -20px
-  thickness = standard
-  color = #ff00ff
-
-text = "Olá!":
-  size = standard
-  position = 0px -50px 0px
-  color = blue
-  thickness = 6px</textarea>
-            <button class="btn-executar" id="btn-compilar">Executar Código 3D</button>
-        </div>
-
-        <div class="bloco-output">
-            <div class="topo-output">
-                <span>Output (Visualização Deslizável):</span>
-                <span id="status-txt">Iniciando...</span>
-            </div>
-            <div id="canvas-container"></div>
-        </div>
-
+        <footer>
+            © 2026 <span id="autor-placeholder">Yudhi Gerson</span>. Todos os direitos reservados.
+        </footer>
     </div>
 
-    <footer>
-        <p>&copy; 2026 2&3Dix. Criado por Yudhi Gerson. Todos os direitos reservados.</p>
-    </footer>
-
     <script>
-        // Escopo local seguro para evitar conflitos com consoles de editores mobile
-        (() => {
-            let scene, camera, renderer, controls, objectGroup;
-            let loadedFont = null;
-
-            function init() {
-                const container = document.getElementById('canvas-container');
-                
-                scene = new THREE.Scene();
-                scene.background = new THREE.Color('#0b0f19');
-
-                camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 1, 1000);
-                camera.position.set(0, 100, 200);
-
-                // Renderer limpo e leve para evitar falhas de extensões OES em WebViews antigos
-                renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: "high-performance" });
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                container.appendChild(renderer.domElement);
-
-                // Movimentação orbital deslizável automática
-                controls = new THREE.OrbitControls(camera, renderer.domElement);
-                controls.enableDamping = true;
-                controls.dampingFactor = 0.05;
-
-                const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-                scene.add(ambientLight);
-
-                const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
-                dirLight.position.set(40, 120, 40);
-                scene.add(dirLight);
-
-                objectGroup = new THREE.Group();
-                scene.add(objectGroup);
-
-                // Grid cartesiano de referência
-                const grid = new THREE.GridHelper(200, 20, '#1e293b', '#131c31');
-                grid.position.y = -35;
-                scene.add(grid);
-
-                // Carrega a fonte de texto de forma segura
-                const loader = new THREE.FontLoader();
-                loader.load('https://unpkg.com/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', 
-                    (font) => {
-                        loadedFont = font;
-                        document.getElementById('status-txt').innerText = "✓ Motor 3D Pronto";
-                        document.getElementById('status-txt').style.color = "var(--success)";
-                        compileAndRender();
-                    },
-                    undefined,
-                    () => {
-                        document.getElementById('status-txt').innerText = "✓ Pronto (Sem fontes)";
-                        compileAndRender();
-                    }
-                );
-
-                window.addEventListener('resize', onWindowResize);
-                animate();
+        // --- GERENCIAMENTO DE TEMAS ---
+        function toggleThemeMode() {
+            document.body.classList.toggle('light-mode');
+            if (document.body.classList.contains('light-mode')) {
+                scene.background.setHex(0xe1e1e6);
+                gridHelper.material.color.setHex(0xaaaaaa);
+            } else {
+                scene.background.setHex(0x0a0a0a);
+                gridHelper.material.color.setHex(0x444444);
             }
+        }
 
-            function onWindowResize() {
-                const container = document.getElementById('canvas-container');
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-                renderer.setSize(container.clientWidth, container.clientHeight);
-            }
+        // --- AMBIENTE GRÁFICO THREE.JS ---
+        const wrapper = document.getElementById('canvas-wrapper');
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0a0a0a);
 
-            function animate() {
-                requestAnimationFrame(animate);
-                controls.update();
-                renderer.render(scene, camera);
-            }
+        const camera = new THREE.PerspectiveCamera(45, wrapper.clientWidth / wrapper.clientHeight, 0.1, 1000);
+        camera.position.set(80, 60, 120);
 
-            function build3DLine(pA, pB, thick, colorStr) {
-                const direction = new THREE.Vector3().subVectors(pB, pA);
-                const length = direction.length();
-                const center = pB.clone().add(pA).divideScalar(2);
-                
-                const r = thick / 2;
-                const geo = new THREE.CylinderGeometry(r, r, length, 8);
-                const mat = new THREE.MeshPhongMaterial({ color: colorStr });
-                const mesh = new THREE.Mesh(geo, mat);
-                
-                mesh.position.copy(center);
-                direction.normalize();
-                mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction);
-                
-                return mesh;
-            }
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        wrapper.appendChild(renderer.domElement);
 
-            function compileAndRender() {
-                // Limpeza completa de execuções anteriores
-                while(objectGroup.children.length > 0) {
-                    objectGroup.remove(objectGroup.children[0]);
-                }
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
 
-                const rawCode = document.getElementById('codigo-editor').value;
-                const lines = rawCode.split('\n');
+        // Isolamento de toque para garantir o deslizamento do objeto sem arrastar a página
+        const impedirScroll = (e) => { e.stopPropagation(); };
+        renderer.domElement.addEventListener('touchstart', impedirScroll, { passive: true });
+        renderer.domElement.addEventListener('touchmove', function(e) { e.preventDefault(); e.stopPropagation(); }, { passive: false });
 
-                let parsedObjects = [];
-                let currentObj = null;
+        // Iluminação
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+        scene.add(ambientLight);
 
-                for (let i = 0; i < lines.length; i++) {
-                    let lineStr = lines[i].trim();
+        const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+        dirLight.position.set(40, 150, 50);
+        dirLight.castShadow = true;
+        dirLight.shadow.mapSize.width = 2048;
+        dirLight.shadow.mapSize.height = 2048;
+        dirLight.shadow.camera.near = 0.5;
+        dirLight.shadow.camera.far = 300;
+        const d = 120;
+        dirLight.shadow.camera.left = -d;
+        dirLight.shadow.camera.right = d;
+        dirLight.shadow.camera.top = d;
+        dirLight.shadow.camera.bottom = -d;
+        scene.add(dirLight);
 
-                    // TRATAMENTO REAL DE COMENTÁRIOS (>>): ignora o resto da linha
-                    if (lineStr.includes('>>')) {
-                        lineStr = lineStr.split('>>')[0].trim();
-                    }
-                    if (!lineStr) continue;
+        // Grid Plane (Plano de Grade Tridimensional de Editores 3D)
+        const gridHelper = new THREE.GridHelper(300, 60, 0x007acc, 0x444444);
+        gridHelper.position.y = -30;
+        scene.add(gridHelper);
 
-                    // MAPEAMENTO DE BLOCOS DE FORMAS
-                    if (lineStr.endsWith(':')) {
-                        let header = lineStr.slice(0, -1).trim();
+        // Sombra Projetada no Grid
+        const shadowFloorGeo = new THREE.PlaneGeometry(2000, 2000);
+        const shadowFloorMat = new THREE.ShadowMaterial({ opacity: 0.4 });
+        const shadowFloor = new THREE.Mesh(shadowFloorGeo, shadowFloorMat);
+        shadowFloor.rotation.x = -Math.PI / 2;
+        shadowFloor.position.y = -30.05;
+        shadowFloor.receiveShadow = true;
+        scene.add(shadowFloor);
 
-                        if (header === 'cube') {
-                            currentObj = { tipo: 'cube', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        } else if (header === 'sphere') {
-                            currentObj = { tipo: 'sphere', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        } else if (header === 'pyramid-4') {
-                            currentObj = { tipo: 'pyramid-4', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        } else if (header === 'torus') {
-                            currentObj = { tipo: 'torus', size: [50, 50, 50], position: [0, 0, 0], color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        } else if (header === 'line') {
-                            currentObj = { tipo: 'line', position: [[0, 0, 0], [0, 0, 0]], thickness: 12, color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        } else if (header.startsWith('text')) {
-                            let textVal = "Texto";
-                            let match = header.match(/text\s*=\s*"([^"]+)"/);
-                            if (match) textVal = match[1];
-                            currentObj = { tipo: 'text', valor: textVal, size: [50, 50, 50], position: [0, 0, 0], thickness: 6, color: '#38bdf8' };
-                            parsedObjects.push(currentObj);
-                        }
-                        continue;
-                    }
+        let grupoCenario = new THREE.Group();
+        scene.add(grupoCenario);
 
-                    // MAPEAMENTO E FILTRAGEM DE PROPRIEDADES
-                    if (currentObj && lineStr.includes('=')) {
-                        let parts = lineStr.split('=');
-                        let prop = parts[0].trim().toLowerCase();
-                        let val = parts[1].trim();
+        // Carregamento da Fonte 3D Mecânica
+        let fonteGlobal3D = null;
+        const loader = new THREE.FontLoader();
+        loader.load('https://unpkg.com/three@0.128.0/examples/fonts/helvetiker_regular.typeface.json', function(font) {
+            fonteGlobal3D = font;
+            carregarExemploInicial();
+        });
 
-                        if (prop === 'size') {
-                            if (val === 'standard') {
-                                currentObj.size = [50, 50, 50];
-                            } else {
-                                let nums = val.replace(/px/g, '').trim().split(/\s+/).map(Number);
-                                if (nums.length === 1) {
-                                    currentObj.size = [nums[0], nums[0], nums[0]];
-                                } else if (nums.length >= 3) {
-                                    currentObj.size = [nums[0], nums[1], nums[2]];
-                                }
-                            }
-                        } 
-                        else if (prop === 'position') {
-                            if (val === 'center') {
-                                currentObj.position = currentObj.tipo === 'line' ? [[0, 0, 0], [0, 0, 0]] : [0, 0, 0];
-                            } else if (val.includes(',')) {
-                                let pairs = val.split(',');
-                                let pt1 = pairs[0].replace(/px/g, '').trim().split(/\s+/).map(Number);
-                                let pt2 = pairs[1].replace(/px/g, '').trim().split(/\s+/).map(Number);
-                                currentObj.position = [pt1, pt2];
-                            } else {
-                                let nums = val.replace(/px/g, '').trim().split(/\s+/).map(Number);
-                                if (nums.length >= 3) {
-                                    currentObj.position = [nums[0], nums[1], nums[2]];
-                                }
-                            }
-                        } 
-                        else if (prop === 'color') {
-                            currentObj.color = val;
-                        } 
-                        else if (prop === 'thickness') {
-                            if (val === 'standard') {
-                                currentObj.thickness = 12;
-                            } else {
-                                currentObj.thickness = Number(val.replace(/px/g, '').trim()) || 12;
-                            }
-                        }
-                    }
-                }
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
 
-                // PROCESSAMENTO DOS MODELOS USANDO PRECISÃO POR ESCALA INDEPENDENTE
-                parsedObjects.forEach(obj => {
-                    let mat = new THREE.MeshPhongMaterial({ color: obj.color, shininess: 30 });
-                    let visualMesh;
+        window.addEventListener('resize', () => {
+            camera.aspect = wrapper.clientWidth / wrapper.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(wrapper.clientWidth, wrapper.clientHeight);
+        });
 
-                    if (obj.tipo === 'cube') {
-                        let geo = new THREE.BoxGeometry(1, 1, 1);
-                        visualMesh = new THREE.Mesh(geo, mat);
-                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
-                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
-                    } 
-                    else if (obj.tipo === 'sphere') {
-                        // Esfera construída como poliedro unitário (diâmetro = 1)
-                        let geo = new THREE.SphereGeometry(0.5, 32, 32);
-                        visualMesh = new THREE.Mesh(geo, mat);
-                        // Escala 3D direta aplica as deformações perfeitamente (elipsoide compatível)
-                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
-                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
-                    } 
-                    else if (obj.tipo === 'pyramid-4') {
-                        let geo = new THREE.ConeGeometry(0.7071, 1, 4);
-                        visualMesh = new THREE.Mesh(geo, mat);
-                        visualMesh.rotation.y = Math.PI / 4; 
-                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2]);
-                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
-                    } 
-                    else if (obj.tipo === 'torus') {
-                        // Geometria básica calculada: diâmetro externo total = 1.0, espessura original Z = 0.3
-                        let geo = new THREE.TorusGeometry(0.35, 0.15, 16, 64);
-                        visualMesh = new THREE.Mesh(geo, mat);
-                        
-                        // X e Y escalam a largura do objeto e do buraco. 
-                        // Z divide por 0.3 para esticar puramente o COMPRIMENTO do tubo sem alterar o buraco de frente!
-                        visualMesh.scale.set(obj.size[0], obj.size[1], obj.size[2] / 0.3);
-                        visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
-                    } 
-                    else if (obj.tipo === 'line') {
-                        let pA = new THREE.Vector3(obj.position[0][0], obj.position[0][1], obj.position[0][2]);
-                        let pB = new THREE.Vector3(obj.position[1][0], obj.position[1][1], obj.position[1][2]);
-                        visualMesh = build3DLine(pA, pB, obj.thickness, obj.color);
-                    } 
-                    else if (obj.tipo === 'text') {
-                        if (loadedFont) {
-                            let textHeight = obj.size[1] * 0.6; 
-                            let geo = new THREE.TextGeometry(obj.valor, {
-                                font: loadedFont,
-                                size: textHeight,
-                                height: obj.thickness || 6,
-                                curveSegments: 4,
-                                bevelEnabled: false
-                            });
-                            
-                            geo.computeBoundingBox();
-                            let centerOffset = new THREE.Vector3();
-                            geo.boundingBox.getCenter(centerOffset).negate();
-                            geo.translate(centerOffset.x, centerOffset.y, centerOffset.z);
-                            
-                            visualMesh = new THREE.Mesh(geo, mat);
-                            visualMesh.position.set(obj.position[0], obj.position[1], obj.position[2]);
-                        }
-                    }
+        // --- CORREÇÃO DO BUG: ALINHAMENTO CORRETO DOS DOIS PONTOS DA LINHA ---
+        function construirLinhaEntrePontos(p1, p2, material) {
+            const v1 = new THREE.Vector3(p1[0], p1[1], p1[2]);
+            const v2 = new THREE.Vector3(p2[0], p2[1], p2[2]);
+            const distancia = v1.distanceTo(v2);
+            
+            // Cria uma estrutura cilíndrica volumétrica
+            const geometriaLinha = new THREE.CylinderGeometry(1.5, 1.5, distancia, 8);
+            const meshLinha = new THREE.Mesh(geometriaLinha, material);
+            
+            // Posiciona exatamente no ponto central entre as duas coordenadas
+            meshLinha.position.copy(v1).add(v2).multiplyScalar(0.5);
+            
+            // Corrige o vetor de direção do cilindro para apontar do Ponto 1 ao Ponto 2
+            const direcao = new THREE.Vector3().subVectors(v2, v1).normalize();
+            const eixoPadrao = new THREE.Vector3(0, 1, 0);
+            
+            // CORRIGIDO: Modificado de 'eisoPadrao' para 'eixoPadrao' (Linha estável e funcional!)
+            meshLinha.quaternion.setFromUnitVectors(eixoPadrao, direcao);
+            
+            meshLinha.castShadow = true;
+            meshLinha.receiveShadow = true;
+            return meshLinha;
+        }
 
-                    if (visualMesh) {
-                        objectGroup.add(visualMesh);
-                    }
-                });
-            }
+        // --- PARSER E TRANSPILADOR DE DUAS PASSAGENS ---
+        function carregarExemploInicial() {
+            document.getElementById('editor').value = 
+`varSelector:
+  Pixel = 30px
+  RaioBase = 15px
+  Calculo = RaioBase * 2
 
-            // Inicialização direta acoplada ao carregamento seguro do DOM
-            window.addEventListener('DOMContentLoaded', () => {
-                init();
-                document.getElementById('btn-compilar').addEventListener('click', compileAndRender);
+blue:
+  color = blue
+
+cube (class = "blue"):
+  size = Pixel
+  position = -45px 0px 0px
+
+cylinder (id = "meu_cilindro"):
+  color = #ff2255
+  size = 20px 50px 20px
+  position = 0px 5px 0px
+
+3-prism (class = "blue"):
+  size = 25px 40px 25px
+  position = 45px 0px 0px
+
+text:
+  color = #ffaa00
+  size = 10px
+  position = -55px -20px 30px
+
+line:
+  color = green
+  position = -50px -25px 30px 50px -25px 30px
+
+print -> "Vamos aplicar comprimento em v1.1 de 2&3dix!"
+print -> Calculo`;
+            executarTranspilador();
+        }
+
+        function executarTranspilador() {
+            const textoCodigo = document.getElementById('editor').value;
+            const consoleUI = document.getElementById('console-out');
+            consoleUI.textContent = ""; 
+            
+            // Limpeza de memória gráfica anterior
+            grupoCenario.children.forEach(child => {
+                if(child.geometry) child.geometry.dispose();
+                if(child.material) child.material.dispose();
             });
-        })();
+            scene.remove(grupoCenario);
+            grupoCenario = new THREE.Group();
+            scene.add(grupoCenario);
+
+            const linhas = textoCodigo.split('\n');
+            
+            let bancoVariaveis = {};
+            let bancoClasses = {};
+            let filaObjetos = [];
+            
+            const regexObjeto = /^(cube|sphere|torus|cylinder|text|line|\d+-prism|n-prism|pyramid-\d+)/i;
+
+            // Passagem 1: Mapear Variáveis e Classes
+            let modo = null;
+            let classeAtual = null;
+
+            for (let i = 0; i < linhas.length; i++) {
+                let linha = linhas[i].trim();
+                if (!linha || linha.startsWith('>>')) continue;
+
+                if (linha.startsWith('varSelector:')) {
+                    modo = 'varSelector';
+                    continue;
+                }
+                if (linha.match(regexObjeto)) {
+                    modo = 'objeto';
+                    continue;
+                }
+                if (linha.endsWith(':') && !linha.includes('(')) {
+                    modo = 'classe';
+                    classeAtual = linha.replace(':', '').trim();
+                    bancoClasses[classeAtual] = {};
+                    continue;
+                }
+
+                if (linha.includes('=')) {
+                    let partes = lineSplit(linha);
+                    let chave = partes[0];
+                    let valor = partes[1];
+
+                    if (modo === 'varSelector') {
+                        bancoVariaveis[chave] = valor;
+                    } else if (modo === 'classe' && classeAtual) {
+                        bancoClasses[classeAtual][chave] = valor;
+                    }
+                }
+            }
+
+            // Resolver cálculos matemáticos internos
+            for (let chave in bancoVariaveis) {
+                bancoVariaveis[chave] = processarCalculoAritmetico(bancoVariaveis[chave], bancoVariaveis);
+            }
+
+            // Passagem 2: Identificar Elementos e Executar Prints
+            modo = null;
+            let objetoAtual = null;
+
+            for (let i = 0; i < linhas.length; i++) {
+                let linha = linhas[i].trim();
+                if (!linha || linha.startsWith('>>')) continue;
+
+                if (linha.startsWith('varSelector:')) {
+                    modo = 'varSelector';
+                    continue;
+                }
+                if (linha.startsWith('print ->')) {
+                    let expressao = linha.split('print ->')[1].trim();
+                    let saidaLimpa = processarPrintDireto(expressao, bancoVariaveis);
+                    consoleUI.textContent += saidaLimpa + "\n";
+                    continue;
+                }
+
+                if (linha.match(regexObjeto)) {
+                    modo = 'objeto';
+                    let cabecalho = linha.endsWith(':') ? linha.slice(0, -1).trim() : AppTrimmer(linha);
+                    let tipoPrimitivo = cabecalho.split(/[ \((]/)[0].trim();
+                    let idCapturado = cabecalho.match(/id\s*=\s*["']([^"']+)["']/);
+                    let classeCapturada = cabecalho.match(/class\s*=\s*["']([^"']+)["']/);
+                    
+                    objetoAtual = {
+                        tipo: tipoPrimitivo,
+                        id: idCapturado ? idCapturado[1] : null,
+                        classe: classeCapturada ? classeCapturada[1] : null,
+                        propriedades: {}
+                    };
+                    filaObjetos.push(objetoAtual);
+                    if (!linha.endsWith(':')) objetoAtual = null;
+                    continue;
+                }
+
+                if (linha.endsWith(':') && !linha.includes('(')) {
+                    modo = 'classe';
+                    continue;
+                }
+
+                if (linha.includes('=') && modo === 'objeto' && objetoAtual) {
+                    let partes = lineSplit(linha);
+                    objetoAtual.propriedades[partes[0]] = partes[1];
+                }
+            }
+
+            // Passagem 3: Renderizar Elementos no Canvas
+            filaObjetos.forEach(obj => {
+                let propriedadesAgrupadas = {};
+                if (obj.classe && bancoClasses[obj.classe]) {
+                    propriedadesAgrupadas = { ...bancoClasses[obj.classe] };
+                }
+                propriedadesAgrupadas = { ...propriedadesAgrupadas, ...obj.propriedades };
+
+                // Tamanho Unificado Automático (X, Y, Z idênticos se passar apenas 1 valor)
+                let dimensoes = [20, 20, 20];
+                if (propriedadesAgrupadas['size']) {
+                    let termos = propriedadesAgrupadas['size'].split(/\s+/);
+                    let processados = termos.map(t => converterTokenParaNumero(t, bancoVariaveis));
+                    if (processados.length === 1) {
+                        dimensoes = [processados[0], processados[0], processados[0]];
+                    } else if (processados.length >= 3) {
+                        dimensoes = [processados[0], processados[1], processados[2]];
+                    }
+                }
+
+                let corHex = propriedadesAgrupadas['color'] || "red";
+                corHex = extrairStringPura(corHex, bancoVariaveis);
+                let mat = new THREE.MeshStandardMaterial({ color: corHex, roughness: 0.4, metalness: 0.1 });
+                let mesh = null;
+
+                // Captura e renderiza a linha usando os 6 eixos de posição (Dois pontos X, Y, Z)
+                if (obj.tipo === 'line') {
+                    let p1 = [0, 0, 0];
+                    let p2 = [30, 0, 0]; 
+                    
+                    if (propriedadesAgrupadas['position']) {
+                        let eixos = propriedadesAgrupadas['position'].split(/\s+/);
+                        let eixosProc = eixos.map(e => converterTokenParaNumero(e, bancoVariaveis));
+                        
+                        if (eixosProc.length >= 6) {
+                            p1 = [eixosProc[0], eixosProc[1], eixosProc[2]];
+                            p2 = [eixosProc[3], eixosProc[4], eixosProc[5]];
+                        } else if (eixosProc.length >= 3) {
+                            p1 = [0, 0, 0];
+                            p2 = [eixosProc[0], eixosProc[1], eixosProc[2]];
+                        }
+                    }
+                    mesh = construirLinhaEntrePontos(p1, p2, mat);
+                } else {
+                    // Posicionamento Padrão de 3 Eixos para os demais objetos tridimensionais
+                    let posicao = [0, 0, 0];
+                    if (propriedadesAgrupadas['position']) {
+                        let eixos = propriedadesAgrupadas['position'].split(/\s+/);
+                        let eixosProc = eixos.map(e => converterTokenParaNumero(e, bancoVariaveis));
+                        if (eixosProc.length >= 3) posicao = [eixosProc[0], eixosProc[1], eixosProc[2]];
+                    }
+
+                    let geom;
+                    let matchPrisma = obj.tipo.match(/^(\d+)-prism$/);
+                    let matchPiramide = obj.tipo.match(/^pyramid-(\d+)$/);
+
+                    if (matchPrisma) {
+                        let lados = parseInt(matchPrisma[1], 10);
+                        geom = new THREE.CylinderGeometry(dimensoes[0]/2, dimensoes[0]/2, dimensoes[1], lados);
+                        mesh = new THREE.Mesh(geom, mat);
+                    } else if (matchPiramide) {
+                        let lados = parseInt(matchPiramide[1], 10);
+                        geom = new THREE.CylinderGeometry(0, dimensoes[0]/2, dimensoes[1], lados);
+                        mesh = new THREE.Mesh(geom, mat);
+                    } else {
+                        switch (obj.tipo) {
+                            case 'cube':
+                                geom = new THREE.BoxGeometry(dimensoes[0], dimensoes[1], dimensoes[2]);
+                                mesh = new THREE.Mesh(geom, mat);
+                                break;
+                            case 'sphere':
+                                geom = new THREE.SphereGeometry(dimensoes[0] / 2, 32, 32);
+                                mesh = new THREE.Mesh(geom, mat);
+                                break;
+                            case 'torus':
+                                geom = new THREE.TorusGeometry(dimensoes[0]/2, dimensoes[1]/6, 16, 100);
+                                mesh = new THREE.Mesh(geom, mat);
+                                break;
+                            case 'cylinder':
+                                geom = new THREE.CylinderGeometry(dimensoes[0]/2, dimensoes[0]/2, dimensoes[1], 32);
+                                mesh = new THREE.Mesh(geom, mat);
+                                break;
+                            case 'text':
+                                if (fonteGlobal3D) {
+                                    geom = new THREE.TextGeometry('2&3Dix 3D', {
+                                        font: fonteGlobal3D,
+                                        size: dimensoes[0] || 8,
+                                        height: 5, // Volume 3D extrudado real
+                                        curveSegments: 6
+                                    });
+                                    mesh = new THREE.Mesh(geom, mat);
+                                }
+                                break;
+                        }
+                    }
+
+                    if (mesh) {
+                        mesh.position.set(posicao[0], posicao[1], posicao[2]);
+                    }
+                }
+
+                if (mesh) {
+                    mesh.castShadow = true;
+                    mesh.receiveShadow = true;
+                    grupoCenario.add(mesh);
+                }
+            });
+
+            if (consoleUI.textContent === "") {
+                consoleUI.textContent = "Compilação concluída com sucesso!";
+            }
+        }
+
+        // --- ENGENHARIA DE STRINGS E TRATAMENTO SINTÁTICO ---
+        function lineSplit(str) {
+            let idx = str.indexOf('=');
+            return [str.slice(0, idx).trim(), str.slice(idx + 1).trim()];
+        }
+
+        function AppTrimmer(str) { return str.trim(); }
+
+        function converterTokenParaNumero(tokenStr, vars) {
+            tokenStr = tokenStr.trim();
+            if (vars[tokenStr] !== undefined) tokenStr = vars[tokenStr].toString();
+            return parseFloat(tokenStr.replace(/px/gi, '')) || 0;
+        }
+
+        function extrairStringPura(tokenStr, vars) {
+            if (vars[tokenStr] !== undefined) return vars[tokenStr].toString().replace(/["']/g, "");
+            return tokenStr.replace(/["']/g, "");
+        }
+
+        function processarCalculoAritmetico(expressao, vars) {
+            let formula = expressao.replace(/px/gi, '');
+            let chavesOrdenadas = Object.keys(vars).sort((a, b) => b.length - a.length);
+            for (let chave of chavesOrdenadas) {
+                let val = vars[chave].toString().replace(/px/gi, '');
+                formula = formula.replace(new RegExp('\\b' + chave + '\\b', 'g'), val);
+            }
+            try { return Function('"use strict";return (' + formula + ')')(); } catch (e) { return expressao.trim(); }
+        }
+
+        function processarPrintDireto(expressao, vars) {
+            expressao = expressao.trim();
+            if ((expressao.startsWith('"') && expressao.endsWith('"')) || (expressao.startsWith("'") && expressao.endsWith("'"))) {
+                return expressao.slice(1, -1);
+            }
+            if (vars[expressao] !== undefined) return vars[expressao].toString().replace(/px/gi, '');
+            return expressao.replace(/px/gi, '');
+        }
     </script>
 </body>
 </html>
+
