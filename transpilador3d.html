@@ -1,505 +1,565 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>2&3Dix 3D - Documentação e Comandos</title>
+    <title>2&3Dix v1.1 - Painel de Controle e Documentação</title>
     <style>
+        /* MODO CLARO TOTAL (Tudo Absolutamente Claro) */
         :root {
-            --bg-principal: #0f172a;
-            --bg-card: #1e293b;
-            --bg-code: #0b0f19;
-            --cor-texto: #f8fafc;
-            --cor-subtexto: #94a3b8;
-            --cor-accent: #38bdf8;
-            --cor-accent-hover: #0ea5e9;
-            --cor-success: #10b981;
+            --bg-body: #f8fafc;
+            --bg-card: #ffffff;
+            --bg-code-input: #ffffff;
+            --bg-code-output: #f1f5f9;
+            --text-main: #0f172a;
+            --text-muted: #475569;
+            --text-code-syntax: #0284c7;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-color: #cbd5e1;
+            --btn-copy-bg: #e2e8f0;
+            --btn-copy-text: #334155;
+            --badge-bg: #dbeafe;
+            --badge-text: #1e40af;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        /* MODO ESCURO TOTAL (Inversão Completa) */
+        .dark {
+            --bg-body: #090d16;
+            --bg-card: #111827;
+            --bg-code-input: #060911;
+            --bg-code-output: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --text-code-syntax: #38bdf8;
+            --accent-color: #3b82f6;
+            --accent-hover: #60a5fa;
+            --border-color: #374151;
+            --btn-copy-bg: #374151;
+            --btn-copy-text: #f3f4f6;
+            --badge-bg: #1e3a8a;
+            --badge-text: #93c5fd;
         }
 
         body {
-            background-color: var(--bg-principal);
-            color: var(--cor-texto);
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            width: 100vw;
-            overflow-x: hidden;
-        }
-
-        /* Cabeçalho */
-        header {
-            text-align: center;
-            padding: 40px 20px 25px 20px;
-            background: linear-gradient(180deg, #131c31 0%, var(--bg-principal) 100%);
-        }
-
-        header h1 {
-            font-size: 3rem;
-            letter-spacing: 3px;
-            font-weight: 800;
-        }
-
-        header h1 span {
-            color: var(--cor-accent);
-        }
-
-        header h2 {
-            font-size: 1.2rem;
-            color: var(--cor-subtexto);
-            margin-top: 8px;
-            font-style: italic;
-            font-weight: 400;
-        }
-
-        /* Botão de Acesso ao Transpilador 3D */
-        .cta-container {
-            display: flex;
-            justify-content: center;
-            padding: 10px 20px 30px 20px;
-            border-bottom: 1px solid #1e293b;
-            background-color: var(--bg-principal);
-        }
-
-        .btn-cta {
-            display: inline-block;
-            padding: 14px 40px;
-            background: linear-gradient(135deg, var(--cor-accent) 0%, #0284c7 100%);
-            color: var(--bg-principal);
-            text-decoration: none;
-            border-radius: 8px;
-            font-weight: 800;
-            font-size: 1.15rem;
-            letter-spacing: 1px;
-            transition: all 0.25s ease;
-            box-shadow: 0 4px 20px rgba(56, 189, 248, 0.25);
-            text-transform: uppercase;
-        }
-
-        .btn-cta:hover {
-            background: linear-gradient(135deg, var(--cor-accent-hover) 0%, #0369a1 100%);
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(56, 189, 248, 0.45);
-        }
-
-        /* Container Principal */
-        .container {
-            max-width: 1400px;
-            width: 100%;
-            margin: 0 auto;
-            padding: 40px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
-        }
-
-        .section-title {
-            font-size: 1.8rem;
-            border-left: 5px solid var(--cor-accent);
-            padding-left: 15px;
-            margin-bottom: 20px;
-            color: var(--cor-texto);
-        }
-
-        /* Grid de Cards */
-        .cards-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-            gap: 25px;
-        }
-
-        /* Estilo dos Cards */
-        .card {
-            background-color: var(--bg-card);
-            border: 1px solid #334155;
-            border-radius: 12px;
+            background-color: var(--bg-body);
+            color: var(--text-main);
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
             padding: 20px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            position: relative;
+            align-items: center;
+            transition: background-color 0.3s, color 0.3s;
         }
 
-        .card:hover {
-            transform: translateY(-4px);
-            border-color: var(--cor-accent);
+        .container {
+            width: 100%;
+            max-width: 850px;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
         }
 
-        .card-header {
+        /* TOPO / HEADER */
+        header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            padding-bottom: 25px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .header-row {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin: 0;
+            color: var(--accent-color);
+            font-weight: 800;
+        }
+
+        .lema {
+            font-size: 1.2rem;
+            font-style: italic;
+            color: var(--text-muted);
+            margin: 5px 0 25px 0;
+        }
+
+        .theme-btn {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 10px 22px;
+            font-weight: bold;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .theme-btn:hover {
+            background-color: var(--accent-hover);
+            transform: scale(1.05);
+        }
+
+        .btn-link {
+            background-color: #10b981;
+            color: white;
+            text-decoration: none;
+            padding: 16px 40px;
+            font-size: 1.25rem;
+            font-weight: bold;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
+            transition: opacity 0.2s, transform 0.1s;
+            text-align: center;
+            width: 80%;
+            max-width: 320px;
+        }
+
+        .btn-link:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* SEÇÕES VERTICAIS */
+        section {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        h2 {
+            font-size: 1.7rem;
+            color: var(--text-main);
+            border-left: 6px solid var(--accent-color);
+            padding-left: 15px;
+            margin: 10px 0 5px 0;
+        }
+
+        /* CARDS */
+        .card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 22px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.02);
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        .card-top {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .badge {
+            background-color: var(--badge-bg);
+            color: var(--badge-text);
+            font-size: 0.75rem;
+            font-weight: bold;
+            padding: 4px 10px;
+            border-radius: 8px;
+            text-transform: uppercase;
         }
 
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.35rem;
             font-weight: 700;
-            color: var(--cor-accent);
+            margin: 0;
+            color: var(--text-main);
         }
 
-        .card-description {
-            font-size: 0.95rem;
-            color: var(--cor-subtexto);
-            line-height: 1.5;
-            margin-bottom: 15px;
+        .card-desc {
+            font-size: 1rem;
+            line-height: 1.6;
+            color: var(--text-muted);
+            margin: 0;
         }
 
-        /* Bloco de Código Copiável */
-        .code-box {
-            background-color: var(--bg-code);
-            padding: 12px;
-            border-radius: 6px;
-            font-family: 'Consolas', 'Courier New', monospace;
-            font-size: 0.9rem;
-            color: #e2e8f0;
-            position: relative;
-            margin-bottom: 15px;
-            white-space: pre-wrap;
-            border: 1px solid #1e293b;
-        }
-
-        .btn-copiar {
-            width: 100%;
-            padding: 10px;
-            background-color: #334155;
-            color: var(--cor-texto);
-            border: none;
-            border-radius: 6px;
-            font-weight: bold;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .btn-copiar:hover {
-            background-color: var(--cor-accent);
-            color: var(--bg-principal);
-        }
-
-        .btn-copiar.copied {
-            background-color: var(--cor-success) !important;
-            color: white !important;
-        }
-
-        /* Matriz de Compatibilidade (Tabela) */
-        .table-container {
-            background-color: var(--bg-card);
-            border: 1px solid #334155;
-            border-radius: 12px;
-            overflow: hidden;
-            width: 100%;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 16px 20px;
-            border-bottom: 1px solid #334155;
-        }
-
-        th {
-            background-color: #243249;
-            color: var(--cor-accent);
-            font-weight: bold;
-            font-size: 1.05rem;
-        }
-
-        tr:last-child td {
-            border-bottom: none;
-        }
-
-        td ul {
-            list-style-type: none;
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        td ul li {
-            background-color: var(--bg-code);
-            padding: 4px 10px;
+        .card-desc code {
+            background-color: var(--bg-code-output);
+            color: var(--accent-color);
+            padding: 2px 6px;
             border-radius: 4px;
-            font-size: 0.85rem;
             font-family: monospace;
-            border: 1px solid #334155;
+            font-weight: bold;
         }
 
-        /* Rodapé */
+        /* CÓDIGO COPIÁVEL (INPUTS / OUTPUTS TÊM QUE FICAR TOTALMENTE CLAROS NO MODO CLARO) */
+        .code-block {
+            position: relative;
+            margin-top: 6px;
+        }
+
+        pre {
+            background-color: var(--bg-code-input);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Fira Code', monospace;
+            font-size: 0.95rem;
+            margin: 0;
+            overflow-x: auto;
+            white-space: pre;
+            transition: background-color 0.3s, border-color 0.3s, color 0.3s;
+        }
+
+        /* Destaque para Saída do Console simulada */
+        pre.console-output {
+            background-color: var(--bg-code-output);
+            border-left: 4px solid #10b981;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background-color: var(--btn-copy-bg);
+            color: var(--btn-copy-text);
+            border: none;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        .copy-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* COPYRIGHT FOOTER */
         footer {
             text-align: center;
-            padding: 30px;
-            color: var(--cor-subtexto);
-            font-size: 0.9rem;
-            border-top: 1px solid #1e293b;
-            margin-top: auto;
-        }
-
-        @media (max-width: 768px) {
-            header h1 { font-size: 2.2rem; }
-            th, td { padding: 12px; }
-            .btn-cta { width: 100%; text-align: center; padding: 12px 20px; font-size: 1rem; }
+            padding: 35px 0;
+            font-size: 1rem;
+            color: var(--text-muted);
+            border-top: 2px solid var(--border-color);
+            margin-top: 20px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1>2<span>&</span>3Dix 3D</h1>
-        <h2>Se não souber desenhar algo, programe ele.</h2>
-    </header>
-
-    <div class="cta-container">
-        <a href="transpilador3d2.html" class="btn-cta">Comece a Criar em 3D</a>
-    </div>
-
     <div class="container">
+        
+        <header>
+            <div class="header-row">
+                <h1>2&3Dix 3D v1.1</h1>
+                <button class="theme-btn" onclick="toggleTheme()">Modo Escuro/Claro</button>
+            </div>
+            <p class="lema">"Se não souber desenhar, programe-o"</p>
+            <a href="transpilador3d2.html" class="btn-link">Começe a programar</a>
+        </header>
 
         <section>
-            <h2 class="section-title">Formas 3D</h2>
-            <div class="cards-grid">
-                
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">cube</span>
-                        </div>
-                        <p class="card-description">Cria um bloco tridimensional regular (cubo) ou retangular.</p>
-                        <div class="code-box">cube:
+            <h2>As nossas palavras-chaves já existentes:</h2>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Forma 3D</span><h3 class="card-title">cube</h3></div>
+                <p class="card-desc">Cria um cubo ou paralelepípedo tridimensional regular no espaço que pode ser totalmente customizado por tamanho, cor e posição.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>cube:
+  size = 40px
+  position = center
+  color = red</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Forma 3D</span><h3 class="card-title">sphere</h3></div>
+                <p class="card-desc">Gera uma esfera (bola tridimensional) perfeita. A propriedade de tamanho define o diâmetro total da esfera.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>sphere:
+  size = 30px
+  position = 0px 40px 0px
+  color = #ffbb00</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Forma 3D</span><h3 class="card-title">pyramid-4</h3></div>
+                <p class="card-desc">Modela uma pirâmide tridimensional clássica construída com uma base perfeitamente quadrada de 4 lados.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>pyramid-4:
+  size = standard
+  position = center
+  color = yellow</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Forma 3D</span><h3 class="card-title">torus</h3></div>
+                <p class="card-desc">Cria uma rosquinha geométrica tridimensional renderizada "em pé" verticalmente no cenário.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>torus:
   size = 30px
   position = center
-  color = #38bdf8</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+  color = blue</pre>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">sphere</span>
-                        </div>
-                        <p class="card-description">Cria uma esfera perfeita no espaço 3D tridimensional.</p>
-                        <div class="code-box">sphere:
+            <div class="card">
+                <div class="card-top"><span class="badge">Forma Especial</span><h3 class="card-title">line (Linha 3D Vetorial)</h3></div>
+                <p class="card-desc">Cria uma linha tridimensional física. <strong>Atenção:</strong> Você deve obrigatoriamente fornecer duas coordenadas completas na propriedade <code>position</code> separadas por vírgula para marcar o ponto inicial e o ponto final (Ponto A, Ponto B). Ela suporta estritamente as propriedades: <code>position</code>, <code>color</code> e <code>thickness</code>.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>line:
+  position = -120px 50px 0px, 120px 50px 0px
+  color = #ff00ff
+  thickness = 16px</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Texto 3D</span><h3 class="card-title">text (Texto Volumétrico)</h3></div>
+                <p class="card-desc">Gera um texto físico tridimensional com profundidade extrudada. Para o compilador ler sem erros, o conteúdo textual deve ser atribuído obrigatoriamente com o sinal de igual (<code>=</code>) e entre aspas na mesma linha da palavra-chave. Suporta: <code>size</code>, <code>position</code>, <code>color</code> e <code>thickness</code>.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>text = "YUDHI":
   size = 40px
-  position = 0px 50px 0px
-  color = red</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+  position = center
+  color = red
+  thickness = standard</pre>
                 </div>
-
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">pyramid-4</span>
-                        </div>
-                        <p class="card-description">Cria uma pirâmide tridimensional com base quadrada perfeita.</p>
-                        <div class="code-box">pyramid-4:
-  size = 30px 50px 30px
-  position = -50px 0px 0px
-  color = #eab308</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
-                </div>
-
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">torus</span>
-                        </div>
-                        <p class="card-description">Cria um objeto tridimensional em formato de rosquinha vertical.</p>
-                        <div class="code-box">torus:
-  size = 50px 50px 20px
-  position = 50px 0px 10px
-  color = purple</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
-                </div>
-
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">line</span>
-                        </div>
-                        <p class="card-description">Cria uma linha reta conectando dois pontos no espaço vetorial 3D.</p>
-                        <div class="code-box">line:
-  position = 10px 0px 20px, 0px 10px -20px
-  thickness = standard
-  color = #334155</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
-                </div>
-
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">text</span>
-                        </div>
-                        <p class="card-description">Renderiza um objeto de texto com extrusão tridimensional real.</p>
-                        <div class="code-box">text = "Olá!":
-  size = 20px
-  position = 0px -60px 0px
-  color = blue</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
-                </div>
-
             </div>
-        </section>
 
-        <section>
-            <h2 class="section-title">Propriedades e Modificadores</h2>
-            <div class="cards-grid">
-
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">size</span>
-                        </div>
-                        <p class="card-description">Modifica a escala do objeto nos eixos X, Y e Z. Aceita 1 valor global, 3 específicos ou o termo padrão.</p>
-                        <div class="code-box">>> Global / Tridimensional / Padrão
-size = 30px
+            <div class="card">
+                <div class="card-top"><span class="badge">Propriedade</span><h3 class="card-title">size</h3></div>
+                <p class="card-desc">Controla a escala do objeto. Aceita 1 valor (para eixos iguais), 3 valores específicos separados por espaço (Largura, Altura, Comprimento) ou a palavra-chave <code>standard</code> (50px para todos).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>size = 30px
 size = 10px 20px 30px
-size = standard</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+size = standard</pre>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">position</span>
-                        </div>
-                        <p class="card-description">Posicionamento cartesiano 3D (X = Direita, Y = Cima, Z = Frente). Linhas usam par de coordenadas separadas por vírgula.</p>
-                        <div class="code-box">>> Objeto / Centro / Linhas
-position = 10px 20px 30px
-position = center
-position = 10px 0px 20px, 0px 10px -20px</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+            <div class="card">
+                <div class="card-top"><span class="badge">Propriedade</span><h3 class="card-title">position</h3></div>
+                <p class="card-desc">Posiciona o objeto no espaço X (Esquerda/Direita), Y (Baixo/Cima) e Z (Trás/Frente). Valores positivos movem X para a direita, Y para cima e Z para a frente. Exige 3 dimensões obrigatórias, com exceção da palavra <code>center</code> (0px 0px 0px).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>position = 10px 20px 30px
+position = center</pre>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">color</span>
-                        </div>
-                        <p class="card-description">Aplica cor ao material do objeto. Suporta palavras reservadas diretas ou códigos hexadecimais.</p>
-                        <div class="code-box">color = red
-color = #ff0000</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+            <div class="card">
+                <div class="card-top"><span class="badge">Propriedade</span><h3 class="card-title">color</h3></div>
+                <p class="card-desc">Define a cor da superfície do objeto. Aceita nomes em inglês ou valores hexadecimais.</p>
+                <div class="code-container code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>color = red
+color = #ff0000</pre>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">thickness</span>
-                        </div>
-                        <p class="card-description">Define a espessura de linhas ou a volumetria de extrusão de blocos de texto tridimensionais.</p>
-                        <div class="code-box">thickness = 20px
-thickness = standard</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+            <div class="card">
+                <div class="card-top"><span class="badge">Propriedade</span><h3 class="card-title">thickness</h3></div>
+                <p class="card-desc">Propriedade exclusiva para os elementos <code>line</code> e <code>text</code>. Controla a grossura da linha ou a profundidade da extrusão de volume do texto. O modo <code>standard</code> aplica 12px automáticos.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>thickness = 20px
+thickness = standard</pre>
                 </div>
+            </div>
 
-                <div class="card">
-                    <div>
-                        <div class="card-header">
-                            <span class="card-title">&gt;&gt; (Comentário)</span>
-                        </div>
-                        <p class="card-description">Linha ignorada pelo processamento sintático do motor do transpilador. Serve para anotações organizacionais.</p>
-                        <div class="code-box">>> Estou em 3d, licença!</div>
-                    </div>
-                    <button class="btn-copiar" onclick="copiarCodigo(this)">Copiar Código</button>
+            <div class="card">
+                <div class="card-top"><span class="badge">Sintaxe</span><h3 class="card-title">&gt;&gt; (Comentários)</h3></div>
+                <p class="card-desc">Linhas iniciadas com duas setas são completamente ignoradas pelo motor gráfico, servindo para documentar seu código.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>&gt;&gt; Estou em 3d, licença!</pre>
                 </div>
-
             </div>
         </section>
 
         <section>
-            <h2 class="section-title">Matriz de Suporte de Atributos</h2>
-            <div class="table-container">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Categoria de Objeto</th>
-                            <th>Propriedades Suportadas</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><strong>Objetos Comuns (cube, sphere, pyramid-4, torus)</strong></td>
-                            <td>
-                                <ul>
-                                    <li>size</li>
-                                    <li>position</li>
-                                    <li>color</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Texto (text)</strong></td>
-                            <td>
-                                <ul>
-                                    <li>size</li>
-                                    <li>position</li>
-                                    <li>color</li>
-                                    <li>thickness</li>
-                                </ul>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td><strong>Linha (line)</strong></td>
-                            <td>
-                                <ul>
-                                    <li>position</li>
-                                    <li>color</li>
-                                    <li>thickness</li>
-                                </ul>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+            <h2>O que adicionamos na v1.1:</h2>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Banco de Dados</span><h3 class="card-title">varSelector</h3></div>
+                <p class="card-desc">Escopo global para armazenar e declarar variáveis. Aceita strings, números, pixels e a execução direta de expressões matemáticas com operadores aritméticos comuns.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>varSelector:
+  Pixel = 30px
+  raio = 10px
+  diametro = raio * 2
+
+cube:
+  size = 40px 50px Pixel</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Atributo</span><h3 class="card-title">id = "meu_objeto"</h3></div>
+                <p class="card-desc">Identidade exclusiva para um único objeto tridimensional, garantindo a maior prioridade de herança e estilo local.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>cube (id = "obj"):
+  size = 50px</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Atributo</span><h3 class="card-title">class = "meus_objetos"</h3></div>
+                <p class="card-desc">Categoriza e agrupa um ou vários objetos sob um mesmo rótulo para receber propriedades em lote.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>sphere (class = "personagem"):
+  color = #FFC080
+
+cube (class = "personagem"):
+  position = 0px -30px 0px
+  color = red</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Seletor</span><h3 class="card-title">Seletor de Classe Puro</h3></div>
+                <p class="card-desc">Permite declarar um bloco de estilização direto para uma classe. Os objetos vinculados herdarão essas configurações automaticamente.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>obj:
+  color = red
+
+torus (class = "obj")</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Nova Forma 3D</span><h3 class="card-title">cylinder</h3></div>
+                <p class="card-desc">Novo objeto nativo da v1.1. Modela um cilindro redondo volumétrico baseado na extrusão perfeita de um círculo.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>cylinder:
+  color = black
+  size = 20px 50px</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Nova Forma 3D</span><h3 class="card-title">n-prism</h3></div>
+                <p class="card-desc">Gera um prisma em pé regular com base poligonal de 'n' lados iguais. Substitua o prefixo 'n' pelo número do polígono desejado (ex: <code>3-prism</code> cria um prisma de base triangular).</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>3-prism:
+  color = blue
+  size = 30px 50px 60px</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Terminal</span><h3 class="card-title">print -&gt;</h3></div>
+                <p class="card-desc">Imprime textos, números ou o valor resolvido de variáveis diretamente no console de saída. Possui um extrator automático que remove estritamente a unidade <code>px</code> dos números ao processar a saída.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>print -&gt; "Vamos aplicar comprimento em v1.1 de 2&3dix!"
+print -&gt; 3px</pre>
+                </div>
+                <p class="card-desc"><em>Saída limpa esperada no Console:</em></p>
+                <div class="code-block">
+                    <pre class="console-output">Vamos aplicar comprimento em v1.1 de 2&3dix!
+3</pre>
+                </div>
             </div>
         </section>
+
+        <section>
+            <h2>Os três pilares em 3D:</h2>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Pilar 1</span><h3 class="card-title">Lazy Definition (Definição Preguiçosa)</h3></div>
+                <p class="card-desc">Ocorre quando você declara os objetos tridimensionais e suas atribuições de classe primeiro, mas a folha/bloco de estilo que configura essa classe é escrita mais abaixo no script.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>cube (class = "blue")
+cylinder (class = "blue")
+
+blue:
+  color = blue</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Pilar 2</span><h3 class="card-title">Inheritance (Herança)</h3></div>
+                <p class="card-desc">O modelo tradicional de cascata: você define detalhadamente as propriedades estruturais de uma classe primeiro e, em seguida, cria os objetos abaixo herdando essas propriedades prontas.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>blue:
+  color = blue
+
+cube (class = "blue")
+sphere (class = "blue")</pre>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-top"><span class="badge">Pilar 3</span><h3 class="card-title">Filho Independente (Independent Child)</h3></div>
+                <p class="card-desc">Permite o ganho de herança global através da classe, mas concede total liberdade ao objeto de abrir um escopo local próprio para redefinir ou adicionar propriedades exclusivas.</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copy(this)">Copiar</button>
+                    <pre>blue:
+  color = blue
+
+cube (class = "blue"):
+  size = 20px 40px 60px
+
+pyramid-4 (class = "blue")</pre>
+                </div>
+            </div>
+        </section>
+
+        <footer>
+            Copyright &copy; Yudhi Gerson. Todos os direitos reservados.
+        </footer>
 
     </div>
 
-    <footer>
-        <p>&copy; 2026 2&3Dix. Criado por Yudhi Gerson. Todos os direitos reservados.</p>
-    </footer>
-
     <script>
-        function copiarCodigo(botao) {
-            const codeBox = botao.parentElement.querySelector('.code-box');
-            const textoParaCopiar = codeBox.innerText;
+        // Inversão Absoluta de Temas (Ativa/Desativa classe .dark no body)
+        function toggleTheme() {
+            document.body.classList.toggle('dark');
+        }
 
-            navigator.clipboard.writeText(textoParaCopiar).then(() => {
-                const textoOriginal = botao.innerText;
-                botao.innerText = "Copiado!";
-                botao.classList.add('copied');
+        // Função de Cópia de Código com feedback visual instantâneo
+        function copy(button) {
+            const codeBlock = button.nextElementSibling;
+            const textToCopy = codeBlock.innerText;
 
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                const originalText = button.innerText;
+                button.innerText = "Copiado!";
+                button.style.backgroundColor = "#10b981";
+                button.style.color = "#ffffff";
+                
                 setTimeout(() => {
-                    botao.innerText = textoOriginal;
-                    botao.classList.remove('copied');
-                }, 1500);
+                    button.innerText = originalText;
+                    button.style.backgroundColor = "";
+                    button.style.color = "";
+                }, 1200);
             }).catch(err => {
-                console.error('Erro ao copiar o código: ', err);
+                console.error("Erro ao copiar código: ", err);
             });
         }
     </script>
